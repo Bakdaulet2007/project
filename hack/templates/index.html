@@ -20,5 +20,18 @@
             </li>
         {% endfor %}
     </ul>
+
+    <form method="GET" action="/">
+    <input type="text" name="search" placeholder="Search by title..." value="{{ search_query }}">
+    <select name="category">
+        <option value="">All Categories</option>
+        <option value="Programming" {% if category == 'Programming' %}selected{% endif %}>Programming</option>
+        <option value="Marketing" {% if category == 'Marketing' %}selected{% endif %}>Marketing</option>
+        <option value="Design" {% if category == 'Design' %}selected{% endif %}>Design</option>
+        <!-- Добавьте другие категории -->
+    </select>
+    <button type="submit">Search</button>
+</form>
+
 </body>
 </html>
