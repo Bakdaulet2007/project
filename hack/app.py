@@ -61,3 +61,30 @@ def profile():
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
+
+@app.route('/')
+def index():
+    # Получаем параметры категории и поиска из URL
+    category = request.args.get('category')  # Фильтр по категории
+    search_query = request.args.get('search')  # Поиск по названию вакансии
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    # Строим SQL-запрос с фильтрацией по категории и поиском по названию
+    query = 'SELECT * FROM jobs WHERE 1=1'  # Начинаем с базового запроса
+    params = []
+
+    if category:
+        query += ' AND category = ?'  # Фильтрация по категории
+        params.append(category)
+    
+    if search_query:
+        query += ' AND title LIKE ?'  # Поиск по названию вакансии
+        params.append(f'%{search_query}%')
+
+    c.execute(query, params)
+    jobs = c.fetchall()
+
+    conn.close()
+    return render_template('index.html', jobs=jobs, category=category, search_query=search_query)
