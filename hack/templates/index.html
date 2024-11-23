@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Job Platform</h1>
+    <a href="/profile">Create your Profile</a>
+
+    <h2>Available Jobs</h2>
+    <ul>
+        {% for job in jobs %}
+            <li>
+                <a href="/job/{{ job[0] }}">{{ job[1] }} at {{ job[2] }}</a>
+                <p>{{ job[3] }}</p>
+                <p>Category: {{ job[4] }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
