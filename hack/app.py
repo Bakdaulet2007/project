@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+
 # Инициализация базы данных
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -34,6 +35,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 # Главная страница
 @app.route('/')
 def index():
@@ -41,6 +43,7 @@ def index():
         return redirect('/login')
 
     return render_template('index.html', username=session['username'])
+
 
 # Страница регистрации
 @app.route('/register', methods=['GET', 'POST'])
@@ -68,6 +71,7 @@ def register():
 
     return render_template('register.html')
 
+
 # Логин
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -77,8 +81,11 @@ def login():
 
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
+
         c.execute('SELECT * FROM users WHERE email = ?', (email,))
         user = c.fetchone()
+
+        conn.close()
 
         if user and check_password_hash(user[3], password):
             session['user_id'] = user[0]
@@ -89,6 +96,7 @@ def login():
             return redirect('/login')
 
     return render_template('login.html')
+
 
 # Добавление вакансии
 @app.route('/add_job', methods=['GET', 'POST'])
@@ -101,34 +109,35 @@ def add_job():
 
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
-        c.execute('INSERT INTO jobs (title, company, description, category) VALUES (?, ?, ?, ?)', (title, company, description, category))
+        c.execute('INSERT INTO jobs (title, company, description, category) VALUES (?, ?, ?, ?)',
+                  (title, company, description, category))
         conn.commit()
         conn.close()
 
         flash("Job added successfully!", "success")
-        return redirect('/vacancies')
+        return redirect('/')
 
     return render_template('add_job.html')
 
+
 # Вакансии
-@app.route('/vacancies', methods=['GET'])
+@app.route('/vacancies')
 def vacancies():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
+
     c.execute('SELECT * FROM jobs')
     jobs = c.fetchall()
+
     conn.close()
+
     return render_template('vacancies.html', jobs=jobs)
 
-# Выход
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
-    session.pop('username', None)
-    flash("You have been logged out.", "success")
-    return redirect('/login')
-
+    session.clear()  # Очищаем сессию (выход из системы)
+    flash("You have been logged out.", "info")
+    return redirect('/login')  # Перенаправляем на страницу вход
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
-

@@ -1,23 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Welcome to the Job Platform</h1>
-    <nav>
-        {% if session.get('username') %}
-            <p>Welcome, {{ session['username'] }}!</p>
-            <a href="/vacancies">View Vacancies</a> |
-            <a href="/add_job">Add Job</a> |
-            <a href="/logout">Logout</a>
-        {% else %}
-            <a href="/login">Login</a> |
-            <a href="/register">Create Account</a>
-        {% endif %}
-    </nav>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2>Сделайте ваш первый шаг с нами</h2>
+    <input type="text" placeholder="Ищу работу...">
+    <button>Найти</button>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <h3>235</h3>
+        <p>Рабочих мест</p>
+    </div>
+    <div class="stat">
+        <h3>426</h3>
+        <p>Актуальных резюме</p>
+    </div>
+    <div class="stat">
+        <h3>626</h3>
+        <p>Трудоустроенных</p>
+    </div>
+</div>
+
+<div class="vacancies">
+    <h2>Вакансии</h2>
+    <!-- Здесь будет код для отображения вакансий из базы данных -->
+</div>
+
+<div class="advice">
+    <h2>Советы</h2>
+    <ul>
+        <li>9 фраз, которые не стоит говорить на собеседовании!</li>
+        <li>Где искать работу?</li>
+        <li>10 секретов идеального резюме</li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+body {
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    display: flex;
+    font-family: "Montserrat", sans-serif;
+}
+.header {
+    margin: 0;
+    height: 100vh;
+    background-image: url(images/header-bg.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    
+}
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
+}
+.top h1 {
+    padding: 40px 0 0 40px;
+    font-size: 32px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+
+}
+.right {
+    display: flex;
+    height: 42px;
+    align-items: center;
+    padding-top: 40px;
+}
+
+.right img {
+    padding: 0 20px 0 0;
+}
+
+.right p {
+    color: white;
+    text-decoration: none;
+    padding:10px 20px;
+    font-family: ;
+    border: 2px solid white;
+    border-radius: 20px;
+    margin-right: 20px;
+}
+
+.right p:hover {
+    background-color: white;
+    color: #464DE8;
+    font-weight: bold;
+    transition: 0.5s;
+}
+.phrase {
+    margin: 200px auto 0;
+    color: white;
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.white {
+    background: white;
+    border-radius: 30px;
+    width: 520px;
+    height: 50px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+}
+.find_job {
+    width: 100px;
+    height: 36px;
+    border: none;
+    border-radius: 20px;
+    margin-left: 10px;
+    background-color: #D9D9D9;
+}
+.find_job img {
+    margin-left: 10px;
+}
+.white input {
+    width: 300px;
+    height: 36px;
+    border-radius: 20px;
+    border: none;
+    background-color: #D9D9D9;
+    margin-left: 5px;
+    padding: 0 5px;
+}
+.white input::placeholder{
+    color: black;
+}
+.find {
+    width: 80px;
+    height: 36px;
+    background-color: #EC7C36;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    margin-left: 5px;
+}
+.header_bottom {
+    display: flex;
+    justify-content: center;
+    margin-top: 200px;
+}
+.header_bottom p {
+    color: white;
+    text-align: center;
+    font-size: 14px;
+}
+.header_bottom b {
+    font-size: 24px;
+}
+.header_bottom span {
+    width: 2px;
+    height: 80px;
+    background-color: white;
+    margin: 0 40px;
+}

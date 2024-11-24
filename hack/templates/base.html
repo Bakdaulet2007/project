@@ -8,17 +8,18 @@
 </head>
 <body>
     <header>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="QADAM Logo">  <!-- Пример для логотипа -->
         <h1>QADAM Job Platform</h1>
         <nav>
             <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="../front/index.html">Home</a></li>
                 {% if 'user_id' in session %}
-                    <li><a href="{{ url_for('vacancies') }}">Vacancies</a></li>
-                    <li><a href="{{ url_for('add_job') }}">Add Job</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><a href="vacancies.html">Vacancies</a></li>
+                    <li><a href="add_job.html">Add Job</a></li>
+                    <li><a href="../front/index.html">Logout</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
