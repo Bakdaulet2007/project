@@ -1,90 +1,134 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-
+app.secret_key = 'your_secret_key'
 
 # Инициализация базы данных
 def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    # Создаем таблицу для студентов, если она не существует
+    # Создаем таблицу для пользователей
     c.execute('''
-        CREATE TABLE IF NOT EXISTS students (
+        CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            course TEXT,
-            skills TEXT
+            username TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
         )
     ''')
+
+    # Создаем таблицу для вакансий
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            company TEXT NOT NULL,
+            description TEXT NOT NULL,
+            category TEXT NOT NULL
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
-
-# Главная страница, отображающая список студентов
+# Главная страница
 @app.route('/')
 def index():
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+    if 'user_id' not in session:
+        return redirect('/login')
 
+    return render_template('index.html', username=session['username'])
 
-    c.execute('SELECT * FROM students')
-    students = c.fetchall()
-
-    conn.close()
-    return render_template('index.html', students=students)
-
-
-
-@app.route('/profile', methods=['GET', 'POST'])
-def profile():
+# Страница регистрации
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
-        name = request.form['name']
-        course = request.form['course']
-        skills = request.form['skills']
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash("Passwords do not match!", "danger")
+            return redirect('/register')
+
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
-
-
-        c.execute('INSERT INTO students (name, course, skills) VALUES (?, ?, ?)', (name, course, skills))
+        c.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', (username, email, hashed_password))
         conn.commit()
         conn.close()
 
-        return redirect('/')
+        flash("Registration successful! You can now log in.", "success")
+        return redirect('/login')
 
-    return render_template('profile.html')
+    return render_template('register.html')
 
+# Логин
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
 
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute('SELECT * FROM users WHERE email = ?', (email,))
+        user = c.fetchone()
+
+        if user and check_password_hash(user[3], password):
+            session['user_id'] = user[0]
+            session['username'] = user[1]
+            return redirect('/')
+        else:
+            flash("Invalid email or password.", "danger")
+            return redirect('/login')
+
+    return render_template('login.html')
+
+# Добавление вакансии
+@app.route('/add_job', methods=['GET', 'POST'])
+def add_job():
+    if request.method == 'POST':
+        title = request.form['title']
+        company = request.form['company']
+        description = request.form['description']
+        category = request.form['category']
+
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute('INSERT INTO jobs (title, company, description, category) VALUES (?, ?, ?, ?)', (title, company, description, category))
+        conn.commit()
+        conn.close()
+
+        flash("Job added successfully!", "success")
+        return redirect('/vacancies')
+
+    return render_template('add_job.html')
+
+# Вакансии
+@app.route('/vacancies', methods=['GET'])
+def vacancies():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM jobs')
+    jobs = c.fetchall()
+    conn.close()
+    return render_template('vacancies.html', jobs=jobs)
+
+# Выход
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash("You have been logged out.", "success")
+    return redirect('/login')
 
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
 
-@app.route('/')
-def index():
-    # Получаем параметры категории и поиска из URL
-    category = request.args.get('category')  # Фильтр по категории
-    search_query = request.args.get('search')  # Поиск по названию вакансии
-
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-
-    # Строим SQL-запрос с фильтрацией по категории и поиском по названию
-    query = 'SELECT * FROM jobs WHERE 1=1'  # Начинаем с базового запроса
-    params = []
-
-    if category:
-        query += ' AND category = ?'  # Фильтрация по категории
-        params.append(category)
-    
-    if search_query:
-        query += ' AND title LIKE ?'  # Поиск по названию вакансии
-        params.append(f'%{search_query}%')
-
-    c.execute(query, params)
-    jobs = c.fetchall()
-
-    conn.close()
-    return render_template('index.html', jobs=jobs, category=category, search_query=search_query)
